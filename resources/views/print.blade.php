@@ -14,12 +14,14 @@
     <button onclick="printReceipt({{ $orderId }})">🖨️ Print Now</button>
 
     <script>
-        async function printReceipt(orderId) {
-            const res = await fetch(`/api/receipt/${orderId}`);
-            const data = await res.json();
-            const base64 = btoa(unescape(encodeURIComponent(data.text)));
-            window.location.href = `rawbt:base64,${base64}`;
-        }
+    async function printReceipt(orderId) {
+        const res = await fetch(`/api/receipt/${orderId}`);
+        const data = await res.json();
+        const base64 = btoa(unescape(encodeURIComponent(data.text)));
+        console.log("Redirecting to RawBT with base64:", base64);
+        alert("Going to RawBT...");
+        window.location.href = `rawbt:base64,${base64}`;
+    }
     </script>
 </body>
 </html>
