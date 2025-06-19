@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Order;
 
 class ReceiptController extends Controller
 {
@@ -14,23 +13,32 @@ class ReceiptController extends Controller
 
     public function getReceipt($id)
     {
-        $order = Order::with('items')->findOrFail($id);
+        try {
+            // TEMP: use hardcoded sample order (no DB)
+            $lines = [];
+            $lines[] = "** MY STORE **";
+            $lines[] = "----------------------------";
+            $lines[] = "Coffee              x2   9.00";
+            $lines[] = "Cake                x1   5.50";
+            $lines[] = "----------------------------";
+            $lines[] = "TOTAL:                  14.50";
+            $lines[] = "Thank you!";
+            $lines[] = "\n\n\n";
 
-        $lines = [];
-        $lines[] = "** MY STORE **";
-        $lines[] = "----------------------------";
-        foreach ($order->items as $item) {
-            $lines[] = sprintf("%-20s x%-2d %6.2f", $item->name, $item->quantity, $item->price);
+            $receiptText = implode("\n", $lines);
+
+            return response()->json([
+                'text' => $receiptText,
+            ]);
+
+        } catch (\Exception $e) {
+            // Log and return error for debugging
+            \Log::error('Print receipt error: ' . $e->getMessage());
+
+            return response()->json([
+                'error' => 'Internal server error',
+                'message' => $e->getMessage()
+            ], 500);
         }
-        $lines[] = "----------------------------";
-        $lines[] = sprintf("TOTAL: %22.2f", $order->total);
-        $lines[] = "Thanks for shopping!";
-        $lines[] = "\n\n\n";
-
-        $receiptText = implode("\n", $lines);
-
-        return response()->json([
-            'text' => $receiptText,
-        ]);
     }
 }

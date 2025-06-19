@@ -15,12 +15,17 @@
 
     <script>
     async function printReceipt(orderId) {
-        const res = await fetch(`/api/receipt/${orderId}`);
-        const data = await res.json();
-        const base64 = btoa(unescape(encodeURIComponent(data.text)));
-        console.log("Redirecting to RawBT with base64:", base64);
-        alert("Going to RawBT...");
-        window.location.href = `rawbt:base64,${base64}`;
+        try {
+            const res = await fetch(`/receipt/${orderId}`);
+            if (!res.ok) throw new Error("HTTP " + res.status);
+            const data = await res.json();
+            const base64 = btoa(unescape(encodeURIComponent(data.text)));
+            alert("Sending to RawBT...");
+            window.location.href = `rawbt:base64,${base64}`;
+        } catch (err) {
+            alert("Print failed: " + err.message);
+            console.error("Print error", err);
+        }
     }
     </script>
 </body>
